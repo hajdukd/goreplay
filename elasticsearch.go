@@ -52,6 +52,7 @@ type ESRequestResponse struct {
 	RespVary             string `json:"Resp_Vary,omitempty"`
 	RespSetCookie        string `json:"Resp_Set-Cookie,omitempty"`
 	RespCppVersion       string `json:"Resp_X-Service-Version,omitempty"`
+	RespCppStatus        string `json:"Resp_X-CPP-Status,omitempty"`
 	Rtt                  int64  `json:"RTT"`
 	Timestamp            time.Time
 }
@@ -162,6 +163,7 @@ func (p *ESPlugin) ResponseAnalyze(req, resp []byte, start, stop time.Time, clie
 		RespVary:             string(proto.Header(resp, []byte("Vary"))),
 		RespSetCookie:        string(proto.Header(resp, []byte("Set-Cookie"))),
 		RespCppVersion:       string(proto.Header(resp, []byte("X-Service-Version"))),
+		RespCppStatus:        string(proto.Header(resp, []byte("X-CPP-Status"))),
 		Rtt:                  rtt,
 		Timestamp:            t,
 	}
