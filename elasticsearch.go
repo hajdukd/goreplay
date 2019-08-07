@@ -39,6 +39,7 @@ type ESRequestResponse struct {
 	ReqIfModifiedSince   string `json:"Req_If-Modified-Since,omitempty"`
 	ReqConnection        string `json:"Req_Connection,omitempty"`
 	ReqCookies           string `json:"Req_Cookies,omitempty"`
+	ReqHost              string `json:"Req_Host"`
 	RespStatus           string `json:"Resp_Status"`
 	RespStatusCode       string `json:"Resp_Status-Code"`
 	RespProto            string `json:"Resp_Proto,omitempty"`
@@ -50,6 +51,7 @@ type ESRequestResponse struct {
 	RespCacheControl     string `json:"Resp_Cache-Control,omitempty"`
 	RespVary             string `json:"Resp_Vary,omitempty"`
 	RespSetCookie        string `json:"Resp_Set-Cookie,omitempty"`
+	RespCppVersion       string `json:"Resp_X-Service-Version,omitempty"`
 	Rtt                  int64  `json:"RTT"`
 	Timestamp            time.Time
 }
@@ -128,7 +130,7 @@ func (p *ESPlugin) RttDurationToMs(d time.Duration) int64 {
 	return int64(fl)
 }
 
-func (p *ESPlugin) ResponseAnalyze(req, resp []byte, start, stop time.Time) {
+func (p *ESPlugin) ResponseAnalyze(req, resp []byte, start, stop time.Time, clientHost string) {
 	if len(resp) == 0 {
 		// nil http response - skipped elasticsearch export for this request
 		return
@@ -147,6 +149,7 @@ func (p *ESPlugin) ResponseAnalyze(req, resp []byte, start, stop time.Time) {
 		ReqIfModifiedSince:   string(proto.Header(req, []byte("If-Modified-Since"))),
 		ReqConnection:        string(proto.Header(req, []byte("Connection"))),
 		ReqCookies:           string(proto.Header(req, []byte("Cookie"))),
+		ReqHost:              string(clientHost),
 		RespStatus:           string(proto.Status(resp)),
 		RespStatusCode:       string(proto.Status(resp)),
 		RespProto:            string(proto.Method(resp)),
@@ -158,6 +161,7 @@ func (p *ESPlugin) ResponseAnalyze(req, resp []byte, start, stop time.Time) {
 		RespCacheControl:     string(proto.Header(resp, []byte("Cache-Control"))),
 		RespVary:             string(proto.Header(resp, []byte("Vary"))),
 		RespSetCookie:        string(proto.Header(resp, []byte("Set-Cookie"))),
+		RespCppVersion:       string(proto.Header(resp, []byte("X-Service-Version"))),
 		Rtt:                  rtt,
 		Timestamp:            t,
 	}
